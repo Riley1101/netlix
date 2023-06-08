@@ -1,0 +1,14 @@
+version: '3'
+services : 
+  web :
+    build : ./netlix-express
+    ports:
+      - "1337:1337"
+    volumes:
+      - .:/app/node
+      - /app/node/node_modules
+    links:
+      - netlix 
+  netlix:
+    image: mongo
+
