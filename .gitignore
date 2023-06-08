@@ -1,0 +1,15 @@
+dist
+node_modules
+.env
+public/static
+public
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+.output
+.env.local
