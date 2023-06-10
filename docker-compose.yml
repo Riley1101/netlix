@@ -1,14 +1,38 @@
 version: '3'
 services : 
-  web :
+  svelte:
+    build : ./netlix-web
+    ports : 
+      - "3000:3000"
+    networks:
+      - netlix
+    expose : 
+      - "3000"
+    environment:
+      VITE_PUBLIC_API_END: http://express:1337 
+      VITE_PUBLIC_CHAT_API: ws://express:1337 
+  express:
     build : ./netlix-express
     ports:
       - "1337:1337"
-    volumes:
-      - .:/app/node
-      - /app/node/node_modules
     links:
-      - netlix 
+      - db 
+    networks:
+      - netlix
+    expose : 
+      - "1337"
+    environment:
+        PORT: 1337 
+        NODE_ENV : development
+        PRODUCTION_MONGODB_URI: mongodb://db:27017 
+        TEST_MONGODB_URI: mongodb://db:27017 
+  db:
+    image: mongo:jammy
+    networks: 
+      - netlix
+  
+networks:
   netlix:
-    image: mongo
-
+    driver: bridge
+    name : netlix
+ 

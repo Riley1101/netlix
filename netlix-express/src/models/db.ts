@@ -1,6 +1,4 @@
 import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
-dotenv.config();
 
 function get_db() {
   let environment = process.env.NODE_ENV;

@@ -1,7 +1,7 @@
 // since there's no dynamic data here, we can prerender
+import { API_END } from "$lib/utils/api";
 export const load = async () => {
-	const movies = await fetch('http://localhost:3000/movies').then((res) => res.json());
-	return {
-		...movies
-	};
+  const movies = await fetch(`${API_END}/movies`).then((res) => res.json());
+
+  return {movies:[]};
 };

@@ -1,5 +1,4 @@
 import cors from "cors";
-import dotenv from "dotenv";
 import express, { Express } from "express";
 import { router } from "../routes/health_check";
 import { movieRouter } from "../routes/movies";
@@ -7,9 +6,7 @@ import { uploadRouter } from "../routes/upload";
 import { chatRouter } from "../routes/chat";
 import { websocket } from "./websockets";
 
-function setup_env(): void {
-  dotenv.config();
-}
+function setup_env(): void {}
 
 export function setup_express() {
   const app: Express = express();
