@@ -5,6 +5,7 @@
 	 * @type {{ movies: {title:string,plot:string,file:string,_id:string}[] }}
 	 */
 	export let data;
+    console.log(data)
 	const { movies } = data;
 </script>
 

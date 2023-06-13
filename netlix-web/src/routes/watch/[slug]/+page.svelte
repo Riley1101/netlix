@@ -1,10 +1,26 @@
 <script>
 	import Chat from '$lib/components/Chat.svelte';
+	import store from '$lib/stores/store';
+	import { API_END } from '$lib/utils/api';
+	import { onMount } from 'svelte';
+	/**@type {HTMLVideoElement} */
 	let videoElement;
 	export let data;
 	const { movie } = data;
-    const api = process.env.API_END;
-    const url = `http://${api}/upload/${movie.file}`;
+	const url = `${API_END}/upload/${movie.file}`;
+	onMount(() => {
+		store.timeStampSubscribe((timeStamp) => {
+
+		});
+		videoElement.addEventListener('timeupdate', (_) => {
+			store.streamTimeStamp({
+				type: 'updateTime',
+                duration: videoElement.duration,
+                paused: videoElement.paused,
+				currentTime: videoElement.currentTime
+			});
+		});
+	});
 </script>
 
 <svelte:head>
