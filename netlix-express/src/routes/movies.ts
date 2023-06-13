@@ -11,7 +11,6 @@ router.get("/movies/:id", async (req: Request, res: Response) => {
     const id = new ObjectId(req.params.id);
     try {
         const movie = await db.collection("movies").findOne({ _id: id });
-        console.log(movie);
         res.status(200).json({ movie });
     } catch (err) {
         console.log(err);

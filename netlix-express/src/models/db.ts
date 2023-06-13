@@ -1,6 +1,9 @@
 import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
 
+dotenv.config();
 function get_db() {
+    console.log(process.env.PORT)
   let environment = process.env.NODE_ENV;
   if (environment === "test") {
     return process.env.TEST_MONGODB_URI as string;

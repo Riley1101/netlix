@@ -32,7 +32,6 @@ router.get("/upload/:id", async (req: Request, res: Response) => {
         "Content-Type": mimetype,
       };
       res.writeHead(206, head);
-      console.log("streaming...");
       file.pipe(res);
     } else {
       const head = {

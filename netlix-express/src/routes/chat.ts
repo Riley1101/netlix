@@ -1,5 +1,4 @@
 import { Router } from "express";
-import ws from "ws";
 
 const router = Router();
 

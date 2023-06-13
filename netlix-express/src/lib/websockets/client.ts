@@ -1,0 +1,21 @@
+import WebSocket from "ws";
+import uuid from "uuid";
+export class Client {
+  public id: string;
+  public name: string;
+  private connection?: WebSocket;
+  constructor(name?: string) {
+    this.id = uuid.v4();
+    this.name = name ? name : this._generateName();
+    this.connection = undefined;
+  }
+  private _generateName() {
+    return Math.random().toString(36).substring(2, 15);
+  }
+  public setConnection(connection: WebSocket) {
+    this.connection = connection;
+  }
+  public getConnection() {
+    return this.connection;
+  }
+}
