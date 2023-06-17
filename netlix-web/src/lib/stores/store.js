@@ -1,6 +1,7 @@
 import { CHAT_API } from '$lib/utils/api';
 import { writable } from 'svelte/store';
 const messageStore = writable();
+const roomStore = writable();
 
 const timeStampStore = writable({ currentTime: 0, duration: 0, paused: 'paused' });
 
@@ -13,11 +14,14 @@ socket.addEventListener('message', function (event) {
 		/**
 		 * @type {import('../types').SocketData}
 		 * */
-		const data = JSON.parse(event.data);
-		console.log(data);
-		if (data.data.type === 'message') {
+		const _raw = JSON.parse(event.data);
+		const { payload, data } = _raw;
+		if (payload.type === 'create') {
+			roomStore.set(payload.room);
+		}
+		if (payload.type === 'message') {
 			messageStore.set(data);
-		} else if (data.data.type === 'video') {
+		} else if (data.type === 'video') {
 			/**
 			timeStampStore.set({
 				currentTime: data.currenttTime,
@@ -27,18 +31,19 @@ socket.addEventListener('message', function (event) {
             */
 		}
 	} catch (err) {
-		console.log(err);
+		console.log(event.data);
 	}
 });
 
 /**
+ * @param {string} type
  * @param {string} message
  * @param {string} room
- * @param {string} name
+ * @param {string} name  
  */
-const sendMessage = (message, room, name) => {
+const sendMessage = (type, message, room, name) => {
 	const data = {
-		payload: { type: 'join', room: room, name: name },
+		payload: { type: type, room: room, name: name},
 		data: { type: 'message', message: message }
 	};
 	if (socket.readyState <= 1) {
@@ -57,6 +62,7 @@ function streamTimeStamp(time) {
 export default {
 	timeStampSubscribe: timeStampStore.subscribe,
 	messageSubscribe: messageStore.subscribe,
+	roomStoreSubscribe: roomStore.subscribe,
 	sendMessage,
 	streamTimeStamp
 };

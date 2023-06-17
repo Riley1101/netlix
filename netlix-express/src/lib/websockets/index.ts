@@ -4,13 +4,29 @@ import { Room } from "./rooms";
 import { Client } from "./client";
 
 export function websocket(expressServer: any) {
-  const clients: WebSocket[] = [];
   const rooms = new Map<string, Room>();
-
   const websocketServer = new WebSocket.Server({
     noServer: true,
     path: "/chat",
   });
+
+  function closeEmptyRoom(room: Room){
+      if(room.clients.length === 0 ){
+          console.log(room.id,"ROOM TO BE DELETED")
+        rooms.delete(room.id)
+          console.log(rooms,"ROOMS")
+      }
+  }
+
+  function getRoom(id: string) {
+    return rooms.get(id);
+  }
+  function removeClientFromRoom(id: string) {
+    const room = getRoom(id);
+    if (room) {
+      room.removeClient(id);
+    }
+  }
   // @ts-ignore
   expressServer.on("upgrade", (request, socket, head) => {
     websocketServer.handleUpgrade(request, socket, head, (socket) => {
@@ -18,41 +34,47 @@ export function websocket(expressServer: any) {
     });
   });
   websocketServer.on("connection", (socket) => {
-    console.log("New client connected");
-    let newClient = new Client();
-    newClient.setConnection(socket);
-    rooms.set(newClient.id, new Room(newClient.id));
+    let currentRoom: Room;
+    let currentClient = new Client();
+    console.log(rooms,"JOINED")
     socket.on("message", (message: RawData) => {
       const _raw: RawType = JSON.parse(message.toString());
       switch (_raw.payload.type) {
         case "create":
+          let roomId = currentClient.id;
+          currentClient.setConnection(socket);
+          const newRoom = new Room(roomId);
+          currentRoom = newRoom;
+          newRoom.join(currentClient);
+          rooms.set(currentClient.id, newRoom);
+          socket.send(
+            JSON.stringify({
+              payload: {
+                type: "create",
+                room: roomId,
+              },
+              data: {
+                message: "Hello Welcome from server",
+                type: "message",
+              },
+            })
+          );
           break;
         case "join":
-          let room = rooms.get(_raw.payload.room);
-          room?.clients.forEach((client) => {
-            const connection = client.getConnection();
-            if (connection?.readyState) {
-              connection?.send("New Client just connected");
-            }
-          });
           break;
         case "leave":
           break;
         default:
-          let rom = rooms.get(_raw.payload.room);
-          rom?.clients.forEach((client) => {
-            const connection = client.getConnection();
-            if (connection?.readyState) {
-              connection?.send("New Client just connected");
-            }
-          });
           break;
       }
     });
 
     socket.on("close", () => {
-      const index = clients.indexOf(socket);
-      clients.splice(index, 1);
+      if (currentRoom) {
+        currentRoom.removeClient(currentClient.id);
+        closeEmptyRoom(currentRoom)
+      }
+      console.log(rooms,"REMOVED")
     });
   });
 

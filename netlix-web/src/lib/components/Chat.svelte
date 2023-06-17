@@ -1,4 +1,5 @@
 <script>
+	import { v4 as uuidv4 } from 'uuid';
 	import { onMount } from 'svelte';
 	import store from '../stores/store';
 	/**
@@ -7,23 +8,54 @@
 	let message;
 
 	/**
+	 *@type {string}
+	 */
+	let roomID;
+	/**
 	 *@type {any}
 	 */
 	let messages = [];
 	onMount(() => {
+		store.roomStoreSubscribe((currentRoom) => {
+			roomID = currentRoom;
+		});
 		store.messageSubscribe((currentMessage) => {
-			messages = [...messages, currentMessage];
+			console.log(currentMessage);
 		});
 	});
+
+	function createRoom() {
+		store.sendMessage('create', 'movieName', 'arkar');
+	}
 	function onSendMessage() {
 		if (message.length > 0) {
-			store.sendMessage(message, 'room1', 'arkar');
+			store.sendMessage('join', 'room1', 'arkar');
 			message = '';
 		}
 	}
 </script>
 
 <div class=" bg-neutral p-4 rounded-md h-full flex justify-between flex-col">
+	<div>
+		{#if !roomID}
+			<div class="flex gpap-4 my-4 gap-4 ">
+				<div class="flex gap-4">
+					<input
+						type="text"
+						placeholder="Type here"
+						class="input input-bordered input-primary w-full"
+					/>
+					<button class="btn">Join Room</button>
+				</div>
+				<button class="btn" on:click={createRoom}>Create Room</button>
+			</div>
+		{/if}
+		{#if roomID}
+			<div class="mockup-code">
+				<pre data-prefix="$"><code>{roomID}</code></pre>
+			</div>
+		{/if}
+	</div>
 	<div class=" overflow-y-auto max-h-[70vh]">
 		{#each messages as ms}
 			{#if ms !== undefined}

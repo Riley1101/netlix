@@ -1,11 +1,12 @@
 import WebSocket from "ws";
-import uuid from "uuid";
+import { v4 as uuidv4 } from 'uuid';
+
 export class Client {
   public id: string;
   public name: string;
   private connection?: WebSocket;
   constructor(name?: string) {
-    this.id = uuid.v4();
+    this.id = uuidv4();
     this.name = name ? name : this._generateName();
     this.connection = undefined;
   }
