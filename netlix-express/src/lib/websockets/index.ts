@@ -10,22 +10,16 @@ export function websocket(expressServer: any) {
     path: "/chat",
   });
 
-  function closeEmptyRoom(room: Room){
-      if(room.clients.length === 0 ){
-          console.log(room.id,"ROOM TO BE DELETED")
-        rooms.delete(room.id)
-          console.log(rooms,"ROOMS")
-      }
+  function closeEmptyRoom(room: Room) {
+    if (room.clients.length === 0) {
+      console.log(room.id, "ROOM TO BE DELETED");
+      rooms.delete(room.id);
+      console.log(rooms, "ROOMS");
+    }
   }
 
   function getRoom(id: string) {
     return rooms.get(id);
-  }
-  function removeClientFromRoom(id: string) {
-    const room = getRoom(id);
-    if (room) {
-      room.removeClient(id);
-    }
   }
   // @ts-ignore
   expressServer.on("upgrade", (request, socket, head) => {
@@ -36,7 +30,7 @@ export function websocket(expressServer: any) {
   websocketServer.on("connection", (socket) => {
     let currentRoom: Room;
     let currentClient = new Client();
-    console.log(rooms,"JOINED")
+    console.log(rooms, "JOINED");
     socket.on("message", (message: RawData) => {
       const _raw: RawType = JSON.parse(message.toString());
       switch (_raw.payload.type) {
@@ -61,6 +55,26 @@ export function websocket(expressServer: any) {
           );
           break;
         case "join":
+          console.log(_raw, "JOIning");
+          const { room: roomID } = _raw.payload;
+          const room = getRoom(roomID);
+          if (room) {
+            console.log(room, "ROOM");
+            currentClient.setConnection(socket);
+            currentRoom = room;
+            room.join(currentClient);
+          } else {
+            socket.send(
+              JSON.stringify({
+                payload: {
+                  type: "error",
+                  message: "Room not found",
+                },
+                data: null,
+              })
+            );
+          }
+
           break;
         case "leave":
           break;
@@ -72,9 +86,8 @@ export function websocket(expressServer: any) {
     socket.on("close", () => {
       if (currentRoom) {
         currentRoom.removeClient(currentClient.id);
-        closeEmptyRoom(currentRoom)
+        closeEmptyRoom(currentRoom);
       }
-      console.log(rooms,"REMOVED")
     });
   });
 

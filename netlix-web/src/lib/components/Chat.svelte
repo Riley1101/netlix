@@ -1,5 +1,4 @@
 <script>
-	import { v4 as uuidv4 } from 'uuid';
 	import { onMount } from 'svelte';
 	import store from '../stores/store';
 	/**
@@ -8,9 +7,13 @@
 	let message;
 
 	/**
-	 *@type {string}
+	 *@type {string} - roomID
 	 */
 	let roomID;
+	/**
+	 *@type {string} - roonInput
+	 */
+	let roomInput;
 	/**
 	 *@type {any}
 	 */
@@ -24,8 +27,12 @@
 		});
 	});
 
+	function joinRoom() {
+		store.sendMessage('join', 'Let me Join', roomInput, 'arkar');
+	}
+
 	function createRoom() {
-		store.sendMessage('create', 'movieName', 'arkar');
+		store.sendMessage('create', 'movieName', null, 'arkar');
 	}
 	function onSendMessage() {
 		if (message.length > 0) {
@@ -38,14 +45,15 @@
 <div class=" bg-neutral p-4 rounded-md h-full flex justify-between flex-col">
 	<div>
 		{#if !roomID}
-			<div class="flex gpap-4 my-4 gap-4 ">
+			<div class="flex gpap-4 my-4 gap-4">
 				<div class="flex gap-4">
 					<input
+						bind:value={roomInput}
 						type="text"
 						placeholder="Type here"
 						class="input input-bordered input-primary w-full"
 					/>
-					<button class="btn">Join Room</button>
+					<button class="btn" on:click={joinRoom}>Join Room</button>
 				</div>
 				<button class="btn" on:click={createRoom}>Create Room</button>
 			</div>
