@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Express } from "express";
 import { router } from "../routes/health_check";
+import { threadRouter } from "../routes/threads";
 import { movieRouter } from "../routes/movies";
 import { uploadRouter } from "../routes/upload";
 import { chatRouter } from "../routes/chat";
@@ -17,6 +18,7 @@ export function setup_express() {
   app.use("/public", express.static("public"));
   app.use(router);
   app.use(movieRouter);
+  app.use(threadRouter);
   app.use(uploadRouter);
   return app;
 }
