@@ -1,6 +1,7 @@
 import type { ObjectId } from "mongodb";
 export interface Movie {
   _id: ObjectId;
+  in_process:boolean;
   title: string;
   year: number;
   runtime: number;
