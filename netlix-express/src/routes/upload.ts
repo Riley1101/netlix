@@ -8,6 +8,32 @@ import { db } from "../models/db";
 const router = Router();
 const upload = multer({ dest: "public/static/", preservePath: true });
 
+
+router.post(
+  "/upload/",
+  upload.single("file"),
+  async (req: Request, res: Response) => {
+    const { file } = req;
+    if (!file) return res.json({ err: "file not found" });
+
+    try {
+      const save_data = {
+        originalname: file?.originalname,
+        destination: file?.destination,
+        filename: file?.filename,
+        path: file?.path,
+        size: file?.size,
+        mimetype: file?.mimetype,
+        type: "movie",
+      };
+      const movie = await db.collection("files").insertOne(save_data);
+      res.json({ ok: file });
+    } catch (err) {
+      res.json({ err });
+    }
+  }
+);
+
 router.get("/upload/:id", async (req: Request, res: Response) => {
   const params = req.params;
   const id = new ObjectId(params.id);
@@ -22,7 +48,8 @@ router.get("/upload/:id", async (req: Request, res: Response) => {
     if (videoRange) {
       // specified range
       const parts = videoRange.replace(/bytes=/, "").split("-");
-      const start = parseInt(parts[0], 10); const end = parts[1] ? parseInt(parts[1], 10) : file_size - 1;
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : file_size - 1;
       const chunksize = end - start + 1;
       const file = fs.createReadStream(video_path, { start, end });
       const head = {
@@ -45,28 +72,4 @@ router.get("/upload/:id", async (req: Request, res: Response) => {
     res.json({ err });
   }
 });
-
-router.post(
-  "/upload/",
-  upload.single("file"),
-  async (req: Request, res: Response) => {
-    const { file } = req;
-    try {
-      const save_data = {
-        originalname: file?.originalname,
-        destination: file?.destination,
-        filename: file?.filename,
-        path: file?.path,
-        size: file?.size,
-        mimetype: file?.mimetype,
-        type: "movie",
-      };
-      const movie = await db.collection("files").insertOne(save_data);
-      res.json({ movie });
-    } catch (err) {
-      res.json({ err });
-    }
-  }
-);
-
 export { router as uploadRouter };

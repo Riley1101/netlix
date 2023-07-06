@@ -1,13 +1,15 @@
 import cors from "cors";
 import express, { Express } from "express";
 import { router } from "../routes/health_check";
+import { threadRouter } from "../routes/process_video";
 import { movieRouter } from "../routes/movies";
 import { uploadRouter } from "../routes/upload";
 import { chatRouter } from "../routes/chat";
 import { websocket } from "./websockets";
 import { logger } from "./logger";
 
-function setup_env(): void {}
+function setup_env(): void {
+}
 
 export function setup_express() {
   const app: Express = express();
@@ -17,6 +19,7 @@ export function setup_express() {
   app.use("/public", express.static("public"));
   app.use(router);
   app.use(movieRouter);
+  app.use(threadRouter);
   app.use(uploadRouter);
   return app;
 }
