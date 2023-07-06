@@ -85,6 +85,9 @@ devDependencies:
   '@types/uuid':
     specifier: ^9.0.2
     version: 9.0.2
+  '@types/workerpool':
+    specifier: ^6.4.0
+    version: 6.4.0
   '@types/ws':
     specifier: ^8.5.4
     version: 8.5.4
@@ -1921,6 +1924,12 @@ packages:
       '@types/node': 20.2.5
       '@types/webidl-conversions': 7.0.0
     dev: false
+
+  /@types/workerpool@6.4.0:
+    resolution: {integrity: sha512-SIF2/169pDsLKeM8GQGHkOFifGalDbZgiBSaLUnnlVSRsAOenkAvQ6h4uhV2W+PZZczS+8LQxACwNkSykdT91A==}
+    dependencies:
+      '@types/node': 20.2.5
+    dev: true
 
   /@types/ws@8.5.4:
     resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
